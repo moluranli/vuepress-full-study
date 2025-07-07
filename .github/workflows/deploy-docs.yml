@@ -1,47 +1,53 @@
-
-name: 部署文档
+name: Deploy to GitHub Pages
 
 on:
   push:
-    branches:
-      # 确保这是你正在使用的分支名称
-      - main
+    branches: [ "main" ]  # 只在 main 分支推送时触发
+  workflow_dispatch:      # 允许手动触发
 
+# 设置必要的权限
 permissions:
   contents: write
+  pages: write
+  id-token: write
 
 jobs:
-  deploy-gh-pages:
+  deploy:
     runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    
     steps:
+      # 1. 检出代码
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0
-          # 如果你文档需要 Git 子模块，取消注释下一行
-          # submodules: true
+          fetch-depth: 0  # 获取完整历史记录
 
-
-
-      - name: 设置 Node.js
+      # 2. 设置 Node.js 环境
+      - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: 22
-          cache: npm
+          node-version: "20"  # VuePress 2.x 需要 Node.js 16+
+          cache: 'npm'
 
-      - name: 安装依赖
-        run: npm ci
+      # 3. 安装依赖
+      - name: Install dependencies
+        run: npm ci  # 使用精确的依赖版本
 
-      - name: 构建文档
+      # 4. 构建项目
+      - name: Build
+        run: npm run docs:build
         env:
-          NODE_OPTIONS: --max_old_space_size=8192
-        run: |-
-          npm run docs:build
-          > docs/.vuepress/dist/.nojekyll
+          NODE_ENV: production  # 确保使用生产环境配置
 
-      - name: 部署文档
-        uses: JamesIves/github-pages-deploy-action@v4
+      # 5. 部署到 GitHub Pages
+      - name: Deploy
+        uses: peaceiris/actions-gh-pages@v3
         with:
-          # 这是文档部署到的分支名称
-          branch: gh-pages
-          folder: docs/.vuepress/dist
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: docs/.vuepress/dist
+          keep_files: false    # 清理旧文件
+          force_orphan: true  # 强制更新整个分支
+          full_commit_message: "Deploy from ${{ github.sha }}"
