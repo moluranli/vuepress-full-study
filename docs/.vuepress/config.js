@@ -1,55 +1,141 @@
 import { defaultTheme } from '@vuepress/theme-default'
 import { defineUserConfig } from 'vuepress'
 import { viteBundler } from '@vuepress/bundler-vite'
-import { path } from '@vuepress/utils'
+import path from 'path'
 
 export default defineUserConfig({
-  // 基础配置
   lang: 'zh-CN',
-  title: 'VuePress 学习文档',
-  description: 'VuePress 部署到 GitHub Pages 的完整示例',
-
-  // 关键：部署路径配置（必须与仓库名一致）
+  title: 'Java学习文档',
+  description: 'Java面试准备知识库',
+  
+  // 部署基础路径
   base: process.env.NODE_ENV === 'production' 
     ? '/vuepress-full-study/' 
     : '/',
-
-  // 主题配置
+  
   theme: defaultTheme({
-    logo: '/images/logo.png', // 图片放在 docs/.vuepress/public/images/
+    logo: '/images/logo.png',
     
+    // 导航栏配置
     navbar: [
       { text: '首页', link: '/' },
-      { text: '指南', link: '/guide/' },
-      { text: '配置', link: '/config/' }
+      { 
+        text: '202306秋招准备（旧）', 
+        link: '/202306秋招准备（旧）/'
+      },
+      { 
+        text: '202507社招准备', 
+        link: '/202507社招准备/'
+      }
     ],
     
+    // 侧边栏配置
     sidebar: {
-      '/guide/': [
-        { text: '快速开始', link: '/guide/' },
-        { text: '部署指南', link: '/guide/deployment' }
+      // 秋招准备侧边栏
+      '/202306秋招准备（旧）/': [
+        {
+          text: '每日计划',
+          collapsible: true,
+          children: [
+            { text: '资源地址', link: '/202306秋招准备（旧）/EveryDayPlay/StudyValue.md' },
+            { text: '2022年6月', link: '/202306秋招准备（旧）/EveryDayPlay/202206/a-6月.md' }
+          ]
+        },
+        {
+          text: 'Java核心',
+          collapsible: true,
+          children: [
+            { text: 'Java基础', link: '/202306秋招准备（旧）/a-1Java基础巩固.md' },
+            { text: 'Java其他知识点', link: '/202306秋招准备（旧）/a-1Java其他重要知识点.md' },
+            { text: 'Java集合', link: '/202306秋招准备（旧）/a-2Java集合.md' }
+          ]
+        },
+        {
+          text: '数据库与JVM',
+          collapsible: true,
+          children: [
+            { text: 'MySql索引', link: '/202306秋招准备（旧）/a-3MySql索引.md' },
+            { text: 'JVM学习', link: '/202306秋招准备（旧）/a-4JVM学习.md' }
+          ]
+        },
+        {
+          text: '算法与面试',
+          collapsible: true,
+          children: [
+            { text: '五大排序', link: '/202306秋招准备（旧）/a-6五大排序.md' },
+            { text: '面试题', link: '/202306秋招准备（旧）/a-5面试题.md' }
+          ]
+        },
+        {
+          text: '中间件',
+          collapsible: true,
+          children: [
+            { text: 'Redis', link: '/202306秋招准备（旧）/b-1Redis.md' },
+            { text: 'Shiro', link: '/202306秋招准备（旧）/b-2Shiro+Thymeleaf.md' }
+          ]
+        },
+        {
+          text: '设计模式',
+          collapsible: true,
+          children: [
+            { text: '常用设计模式', link: '/202306秋招准备（旧）/d-1常用设计模式.md' }
+          ]
+        },
+        {
+          text: '项目实践',
+          collapsible: true,
+          children: [
+            { text: '在线论坛项目', link: '/202306秋招准备（旧）/c-1Forum_Practice在线论坛.md' },
+            { text: 'wiki知识库', link: '/202306秋招准备（旧）/c-2wiki个人知识库.md' }
+          ]
+        }
+      ],
+      // 社招准备侧边栏
+      '/202507社招准备/': [
+        {
+          text: '面试',
+          collapsible: true,
+          children: [
+            { text: '面试题准备', link: '/202507社招准备/面试题准备.md' },
+            { text: '算法题练习', link: '/202507社招准备/算法题练习.md' }
+          ]
+        }
       ]
-    }
+    },
+    
+    // GitHub 图标
+    socialLinks: [
+      { 
+        icon: 'github', 
+        link: 'https://github.com/moluranli',
+        ariaLabel: 'GitHub 主页'
+      }
+    ],
+    
+    // 仓库链接
+    repo: 'https://github.com/moluranli/vuepress-full-study',
+    repoLabel: 'GitHub编辑'
   }),
-
-  // 构建工具配置
+  
+  // 构建配置
   bundler: viteBundler({
     viteOptions: {
       build: {
-        chunkSizeWarningLimit: 1500 // 增大块大小警告限制
+        chunkSizeWarningLimit: 1500
       }
     }
   }),
-
+  
   // 头部标签
   head: [
-    ['link', { rel: 'icon', href: '/vuepress-full-study/favicon.ico' }],
-    ['meta', { name: 'theme-color', content: '#3eaf7c' }]
+    ['link', { rel: 'icon', href:'/images/logo.png' }],
+    ['meta', { name: 'theme-color', content: '#3eaf7c' }],
+    ['meta', { name: 'keywords', content: 'Java学习,秋招准备,面试题,Java基础' }]
   ],
-
+  
   // 插件配置
   plugins: [
-    ['@vuepress/plugin-search'], // 内置搜索插件
-    ['@vuepress/plugin-shiki']   // 代码高亮
+    ['@vuepress/plugin-search'],
+    ['@vuepress/plugin-shiki']
   ]
 })
