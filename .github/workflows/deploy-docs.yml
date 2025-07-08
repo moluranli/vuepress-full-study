@@ -1,43 +1,62 @@
-name: Deploy with Relaxed Rules
+name: Build and Deploy VuePress Site
 
 on:
   push:
-    branches: [ "main" ]
+    branches:
+      - main  # 只在 main 分支推送时触发
 
 jobs:
-  deploy:
+  build-and-deploy:
     runs-on: ubuntu-latest
+    
     steps:
-      - uses: actions/checkout@v4
-      
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: "20"
-      
-      - name: Install dependencies
-        run: npm ci
-        
-      - name: Patch VuePress (关键步骤)
-        run: |
-          # 1. 禁用 Markdown 严格校验
-          sed -i "s/const { html, text } = options.markdown || {};/const { html = true, text } = options.markdown || {};/" node_modules/@vuepress/core/lib/node/createMarkdown.js
+    - name: Checkout 🛎️
+      uses: actions/checkout@v3
+      with:
+        fetch-depth: 0  # 获取完整提交历史
+
+    - name: Setup Node.js 🔧
+      uses: actions/setup-node@v3
+      with:
+        node-version: 18
+        cache: 'npm'
+
+    - name: Install dependencies 📦
+      run: npm install
+
+    - name: Create VuePress config file 📄
+      run: |
+        mkdir -p docs/.vuepress
+        cat > docs/.vuepress/config.js <<EOF
+        module.exports = {
+          title: 'My VuePress Site',
+          description: 'Just playing around',
           
-          # 2. 放宽 HTML 标签限制
-          sed -i "s/const md = markdownIt(options)/const md = markdownIt({...options, html: true})/" node_modules/@vuepress/markdown/lib/createMarkdown.js
+          // 禁用 Markdown 严格模式的核心配置
+          markdown: {
+            html: true,         // 允许 HTML
+            breaks: true,       // 允许换行符
+            linkify: true,      // 自动链接 URL
+            typographer: true,  // 排版增强
+            strict: false      // 禁用严格模式
+          },
           
-          # 3. 禁用默认的 markdownlint
-          if [ -f "node_modules/@vuepress/markdown/lib/node/markdownlint.js" ]; then
-            echo "module.exports = () => {}" > node_modules/@vuepress/markdown/lib/node/markdownlint.js
-          fi
-          
-      - name: Build with relaxed rules
-        run: npm run docs:build
-        env:
-          NODE_ENV: production
-          
-      - name: Deploy
-        uses: peaceiris/actions-gh-pages@v3
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: docs/.vuepress/dist
+          // 可选：自定义主题配置
+          themeConfig: {
+            nav: [
+              { text: 'Home', link: '/' },
+              { text: 'Guide', link: '/guide/' }
+            ],
+            sidebar: 'auto'
+          }
+        }
+        EOF
+
+    - name: Build project 🏗️
+      run: npm run build
+
+    - name: Deploy to GitHub Pages 🚀
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: docs/.vuepress/dist
