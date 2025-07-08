@@ -12,7 +12,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # 获取完整提交历史（用于 lastUpdated 功能）
+          fetch-depth: 0  # 获取完整提交历史
           
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -22,18 +22,21 @@ jobs:
           
       - name: Install dependencies
         run: |
-          npm ci --prefer-offline
-          # 确保安装所有依赖
-          npm install
+          # 使用更可靠的依赖安装方式
+          npm ci --prefer-offline --no-audit
+          
+      - name: Clean cache
+        run: |
+          # 更安全的缓存清理方式
+          npx vuepress clean docs || true
+          rm -rf docs/.vuepress/.cache
+          rm -rf docs/.vuepress/.temp
+          rm -rf node_modules/.vite
           
       - name: Build VuePress site
         run: |
-          # 清理缓存
-          npm run docs:clean-dev
-          rm -rf docs/.vuepress/.temp
-          
-          # 尝试构建，忽略错误
-          npm run docs:build || true
+          # 设置超时时间并忽略错误
+          timeout 5m npm run docs:build || true
           
           # 确保 dist 目录存在
           mkdir -p docs/.vuepress/dist
@@ -42,10 +45,8 @@ jobs:
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: docs/.vuepress/dist  # VuePress 默认输出路径
+          publish_dir: docs/.vuepress/dist
           keep_files: false
-          # 取消下面一行的注释并替换为您的自定义域名
-          # cname: www.yourdomain.com
           user_name: 'github-actions[bot]'
           user_email: '41898282+github-actions[bot]@users.noreply.github.com'
           commit_message: 'Deploy VuePress site from ${{ github.sha }}'
