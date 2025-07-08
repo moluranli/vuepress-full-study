@@ -1,36 +1,39 @@
 # .github/workflows/deploy.yml
-name: Build and Deploy
+name: Build and Deploy VuePress
 on:
   push:
-    branches: [ main, master ]  # 监听 main 或 master 分支的推送
-  workflow_dispatch:            # 支持手动触发
+    branches: [ main, master ]
+  workflow_dispatch:
 
 jobs:
-  build-and-deploy:
+  deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: Checkout code
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0         # 获取完整提交历史（用于最后更新时间）
-
-      - name: Setup Node
+          fetch-depth: 0  # 获取完整提交历史（用于 lastUpdated 功能）
+          
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20      # 推荐使用 Node.js LTS 版本
-
-      - name: Install Dependencies
-        run: npm install         # 或使用 yarn
-
-      - name: Build VuePress
-        run: npm run build       # 执行项目中的 build 脚本
-
+          node-version: 20
+          cache: 'npm'  # 自动缓存 npm 依赖
+          
+      - name: Install dependencies
+        run: npm install
+        
+      - name: Build VuePress site
+        run: npm run docs:build  # 使用您 package.json 中的实际构建命令
+        
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: .vuepress/dist          # VuePress 默认输出目录
-          keep_files: false                    # 部署前清除旧文件
-          cname: www.yourdomain.com            # 取消注释并替换为你的自定义域名
-          user_name: 'github-actions[bot]'     # 提交者用户名
-          user_email: '41898282+github-actions[bot]@users.noreply.github.com' # 提交者邮箱
+          publish_dir: docs/.vuepress/dist  # VuePress 默认输出路径
+          keep_files: false
+          # 取消下面一行的注释并替换为您的自定义域名
+          # cname: www.yourdomain.com
+          user_name: 'github-actions[bot]'
+          user_email: '41898282+github-actions[bot]@users.noreply.github.com'
+          commit_message: 'Deploy VuePress site from ${{ github.sha }}'
