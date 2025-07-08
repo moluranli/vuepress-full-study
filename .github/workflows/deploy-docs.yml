@@ -1,104 +1,36 @@
-name: Deploy VuePress Site
-
+# .github/workflows/deploy.yml
+name: Build and Deploy
 on:
   push:
-    branches:
-      - main
+    branches: [ main, master ]  # 监听 main 或 master 分支的推送
+  workflow_dispatch:            # 支持手动触发
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
-    concurrency: 
-      group: deploy-${{ github.ref }}
-      cancel-in-progress: true
-    
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
-      with:
-        fetch-depth: 0
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0         # 获取完整提交历史（用于最后更新时间）
 
-    - name: Setup Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: '20'
-        cache: 'npm'
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20      # 推荐使用 Node.js LTS 版本
 
-    - name: Install dependencies
-      run: npm install
+      - name: Install Dependencies
+        run: npm install         # 或使用 yarn
 
-    # 修复后的 VuePress 配置文件
-    - name: Create VuePress config
-      run: |
-        mkdir -p docs/.vuepress
-        cat > docs/.vuepress/config.js << 'EOF'
-        import { defineUserConfig } from 'vuepress'
-        import { defaultTheme } from '@vuepress/theme-default'
+      - name: Build VuePress
+        run: npm run build       # 执行项目中的 build 脚本
 
-        export default defineUserConfig({
-          lang: 'zh-CN',
-          title: 'VuePress 学习文档',
-          description: 'VuePress 2.x 完整学习项目',
-          
-          // 禁用 Markdown 严格模式的核心配置
-          markdown: {
-            html: true,         // 允许 HTML 标签
-            breaks: true,       // 允许换行符转换为 <br>
-            linkify: true,      // 自动将 URL 转换为链接
-            typographer: true,  // 启用排版增强
-          },
-          
-          // 扩展 markdown-it 配置
-          extendsMarkdown: (md) => {
-            // 禁用严格的 HTML 块规则
-            md.disable('html_block')
-            
-            // 允许不闭合的 HTML 标签
-            md.renderer.rules.html_block = (tokens, idx) => {
-              return tokens[idx].content
-            }
-          },
-          
-          // 主题配置
-          theme: defaultTheme({
-            navbar: [
-              { text: '首页', link: '/' },
-              { text: '指南', link: '/guide/' }
-            ],
-            sidebar: 'auto'
-          }),
-          
-          // 修复 bundler 配置问题
-          bundler: '@vuepress/bundler-vite',
-          bundlerConfig: {
-            viteOptions: {
-              build: {
-                // 添加必要的构建选项
-                minify: 'terser',
-                target: 'esnext'
-              },
-              ssr: {
-                noExternal: ['vue']
-              }
-            }
-          }
-        })
-        EOF
-
-    # 添加必要的构建环境变量
-    - name: Set environment variables
-      run: |
-        echo "VUEPRESS_BUNDLER=vite" >> $GITHUB_ENV
-        echo "NODE_OPTIONS=--openssl-legacy-provider" >> $GITHUB_ENV
-
-    - name: Build VuePress site
-      run: npm run docs:build
-
-    - name: Deploy to GitHub Pages
-      uses: peaceiris/actions-gh-pages@v3
-      with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        publish_dir: docs/.vuepress/dist
-        force_orphan: true
-        user_name: 'github-actions[bot]'
-        user_email: 'github-actions[bot]@users.noreply.github.com'
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: .vuepress/dist          # VuePress 默认输出目录
+          keep_files: false                    # 部署前清除旧文件
+          cname: www.yourdomain.com            # 取消注释并替换为你的自定义域名
+          user_name: 'github-actions[bot]'     # 提交者用户名
+          user_email: '41898282+github-actions[bot]@users.noreply.github.com' # 提交者邮箱
