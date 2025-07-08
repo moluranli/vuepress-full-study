@@ -3,7 +3,7 @@ name: Deploy VuePress Site
 on:
   push:
     branches:
-      - main  # 只在 main 分支推送时触发
+      - main
 
 jobs:
   build-and-deploy:
@@ -16,7 +16,7 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v4
       with:
-        fetch-depth: 0  # 获取完整提交历史
+        fetch-depth: 0
 
     - name: Setup Node.js
       uses: actions/setup-node@v4
@@ -27,7 +27,7 @@ jobs:
     - name: Install dependencies
       run: npm install
 
-    # 创建 VuePress 配置文件（包含禁用 Markdown 严格校验）
+    # 修复后的 VuePress 配置文件
     - name: Create VuePress config
       run: |
         mkdir -p docs/.vuepress
@@ -68,10 +68,15 @@ jobs:
             sidebar: 'auto'
           }),
           
-          // Vite 配置
+          // 修复 bundler 配置问题
           bundler: '@vuepress/bundler-vite',
           bundlerConfig: {
             viteOptions: {
+              build: {
+                // 添加必要的构建选项
+                minify: 'terser',
+                target: 'esnext'
+              },
               ssr: {
                 noExternal: ['vue']
               }
@@ -79,6 +84,12 @@ jobs:
           }
         })
         EOF
+
+    # 添加必要的构建环境变量
+    - name: Set environment variables
+      run: |
+        echo "VUEPRESS_BUNDLER=vite" >> $GITHUB_ENV
+        echo "NODE_OPTIONS=--openssl-legacy-provider" >> $GITHUB_ENV
 
     - name: Build VuePress site
       run: npm run docs:build
@@ -88,6 +99,6 @@ jobs:
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         publish_dir: docs/.vuepress/dist
-        force_orphan: true  # 确保每次部署都创建新的提交历史
+        force_orphan: true
         user_name: 'github-actions[bot]'
         user_email: 'github-actions[bot]@users.noreply.github.com'
