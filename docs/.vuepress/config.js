@@ -31,7 +31,7 @@ export default defineUserConfig({
   },
   
   theme: defaultTheme({
-    logo: '/images/logo.png',
+    logo: 'https://cdn.jsdelivr.net/gh/moluranli/image-bed/blog/img/20250708195500493.png',
     
     navbar: [
       { text: '首页', link: '/' },
@@ -147,7 +147,7 @@ export default defineUserConfig({
   }),
   
   head: [
-    ['link', { rel: 'icon', href:'/images/logo.png' }],
+    ['link', { rel: 'icon', href:'https://cdn.jsdelivr.net/gh/moluranli/image-bed/blog/img/20250708195500493.png' }],
     ['meta', { name: 'theme-color', content: '#3eaf7c' }],
     ['meta', { name: 'keywords', content: 'Java学习,秋招准备,面试题,Java基础' }]
   ],

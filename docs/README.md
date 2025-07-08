@@ -1,7 +1,7 @@
 ---
 home: true
 title: Home
-heroImage: /images/logo.png
+heroImage: https://cdn.jsdelivr.net/gh/moluranli/image-bed/blog/img/20250708195500493.png
 actions:
   - text: Get Started
     link: /202507社招准备/
