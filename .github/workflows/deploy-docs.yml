@@ -2,10 +2,9 @@ name: Deploy to GitHub Pages
 
 on:
   push:
-    branches: [ "main" ]  # 只在 main 分支推送时触发
-  workflow_dispatch:      # 允许手动触发
+    branches: [ "main" ]
+  workflow_dispatch:
 
-# 设置必要的权限
 permissions:
   contents: write
   pages: write
@@ -19,35 +18,50 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     
     steps:
-      # 1. 检出代码
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # 获取完整历史记录
+          fetch-depth: 0
 
-      # 2. 设置 Node.js 环境
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: "20"  # VuePress 2.x 需要 Node.js 16+
+          node-version: "20"
           cache: 'npm'
 
-      # 3. 安装依赖
       - name: Install dependencies
-        run: npm ci  # 使用精确的依赖版本
+        run: |
+          npm ci
+          npm install markdownlint-cli
 
-      # 4. 构建项目
-      - name: Build
-        run: npm run docs:build
+      - name: Validate Markdown
+        run: |
+          npx markdownlint 'docs/**/*.md' --ignore node_modules
+
+      - name: Build with retry
+        run: |
+          # 第一次构建尝试
+          npm run docs:build || {
+            echo "=== First build failed, cleaning cache and retrying ==="
+            rm -rf docs/.vuepress/.cache docs/.vuepress/.temp
+            npm run docs:build
+          }
         env:
-          NODE_ENV: production  # 确保使用生产环境配置
+          NODE_ENV: production
+          BASE_URL: '/vuepress-full-study/'
 
-      # 5. 部署到 GitHub Pages
+      - name: Verify build output
+        run: |
+          [ -d "docs/.vuepress/dist" ] || {
+            echo "Build failed - no dist directory created"
+            exit 1
+          }
+
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: docs/.vuepress/dist
-          keep_files: false    # 清理旧文件
-          force_orphan: true  # 强制更新整个分支
+          keep_files: false
+          force_orphan: true
           full_commit_message: "Deploy from ${{ github.sha }}"
