@@ -1,28 +1,24 @@
 import { defaultTheme } from '@vuepress/theme-default'
 import { defineUserConfig } from 'vuepress'
 import { viteBundler } from '@vuepress/bundler-vite'
-import path from 'path'
-import markdownItCleanup from 'markdown-it-cleanup'
 
 export default defineUserConfig({
   lang: 'zh-CN',
   title: 'Java学习文档',
   description: 'Java面试准备知识库',
   
-  // 部署基础路径
   base: process.env.NODE_ENV === 'production' 
     ? '/vuepress-full-study/' 
     : '/',
   
-  // 添加 markdown 配置
+  // 使用兼容性更好的 Markdown 配置
   markdown: {
     extendMarkdown: (md) => {
-      md.use(markdownItCleanup, {
-        replace: [
-          ['<br>', '<br />'],
-          ['<hr>', '<hr />'],
-          [/(<[a-z]+)([^>]*[^/])>/g, '$1$2 />']
-        ]
+      // 启用 XHTML 兼容模式
+      md.set({
+        xhtmlOut: true,
+        breaks: true,
+        typographer: true
       });
     }
   },
@@ -30,7 +26,6 @@ export default defineUserConfig({
   theme: defaultTheme({
     logo: '/images/logo.png',
     
-    // 导航栏配置
     navbar: [
       { text: '首页', link: '/' },
       { 
@@ -117,7 +112,6 @@ export default defineUserConfig({
       ]
     },
     
-    // GitHub 图标
     socialLinks: [
       { 
         icon: 'github', 
@@ -126,20 +120,18 @@ export default defineUserConfig({
       }
     ],
     
-    // 仓库链接
     repo: 'https://github.com/moluranli/vuepress-full-study',
     repoLabel: 'GitHub编辑'
   }),
   
-  // 构建配置
   bundler: viteBundler({
     viteOptions: {
       build: {
         chunkSizeWarningLimit: 1500
       },
-      // 添加 Vue 解析选项
       vue: {
         compilerOptions: {
+          // 宽松解析模式
           whitespace: 'preserve',
           isCustomElement: tag => true
         }
@@ -147,14 +139,12 @@ export default defineUserConfig({
     }
   }),
   
-  // 头部标签
   head: [
     ['link', { rel: 'icon', href:'/images/logo.png' }],
     ['meta', { name: 'theme-color', content: '#3eaf7c' }],
     ['meta', { name: 'keywords', content: 'Java学习,秋招准备,面试题,Java基础' }]
   ],
   
-  // 插件配置
   plugins: [
     ['@vuepress/plugin-search'],
     ['@vuepress/plugin-shiki']
