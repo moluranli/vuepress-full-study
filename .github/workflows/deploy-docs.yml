@@ -1,52 +1,39 @@
 # .github/workflows/deploy.yml
-name: Build and Deploy VuePress
+name: Deploy VuePress Documentation
+
 on:
   push:
-    branches: [ main, master ]
-  workflow_dispatch:
+    branches: [ main ]  # 触发分支
+  workflow_dispatch:    # 允许手动触发
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
+      - name: Checkout repository
         uses: actions/checkout@v4
         with:
           fetch-depth: 0  # 获取完整提交历史
-          
+          persist-credentials: false  # 避免权限问题
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
-          cache: 'npm'  # 启用 npm 缓存
-          
+          node-version: 20  # 匹配 VuePress 要求
+          cache: 'npm'      # 缓存 npm 依赖
+
       - name: Install dependencies
-        run: |
-          # 使用更可靠的依赖安装方式
-          npm ci --prefer-offline --no-audit
-          
-      - name: Clean cache
-        run: |
-          # 更安全的缓存清理方式
-          npx vuepress clean docs || true
-          rm -rf docs/.vuepress/.cache
-          rm -rf docs/.vuepress/.temp
-          rm -rf node_modules/.vite
-          
+        run: npm install  # 使用常规安装
+
       - name: Build VuePress site
-        run: |
-          # 设置超时时间并忽略错误
-          timeout 5m npm run docs:build || true
-          
-          # 确保 dist 目录存在
-          mkdir -p docs/.vuepress/dist
-        
+        run: npm run docs:build
+
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: docs/.vuepress/dist
-          keep_files: false
+          keep_files: false  # 部署前清空目标分支
           user_name: 'github-actions[bot]'
           user_email: '41898282+github-actions[bot]@users.noreply.github.com'
-          commit_message: 'Deploy VuePress site from ${{ github.sha }}'
+          commit_message: 'Deploy Java学习文档 from ${{ github.sha }}'
