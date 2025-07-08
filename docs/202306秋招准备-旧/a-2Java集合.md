@@ -45,7 +45,7 @@ Map 接口 键值对的集合 （双列集合）
 | boolean contains(Object o)        | 判断集合中是否存在指定元素                                   |
 | boolean containsAll(Collection c) | 判断集合中是否包含集合 c 中的所有元素                        |
 | boolean isEmpty()                 | 判断集合是否为空                                             |
-| Iterator<E>iterator()             | 返回一个 Iterator 对象，用于遍历集合中的元素                 |
+| `Iterator<E>iterator()`           | 返回一个 Iterator 对象，用于遍历集合中的元素                 |
 | boolean remove(Object o)          | 从集合中删除一个指定元素，当集合中包含了一个或多个元素 o 时，该方法只删除第一个符合条件的元素，该方法将返回 true。 |
 | boolean removeAll(Collection c)   | 从集合中删除所有在集合 c 中出现的元素（相当于把调用该方法的集合减去集合 c）。如果该操作改变了调用该方法的集合，则该方法返回 true。 |
 | boolean retainAll(Collection c)   | 从集合中删除集合 c 里不包含的元素（相当于把调用该方法的集合变成该集合和集合 c 的交集），如果该操作改变了调用该方法的集合，则该方法返回 true。 |
@@ -54,7 +54,7 @@ Map 接口 键值对的集合 （双列集合）
 
 
 
-### Iterator<E>iterator()方法详解
+### `Iterator<E>iterator()`方法详解
 
 此方法是通过父类**Iterator**中的方法,是返回一个迭代器对象,是遍历集合中元素的一个方法,以下为**ArrayList**实现**iterator**方法源码
 
@@ -308,7 +308,7 @@ public class Main {
 
 
 
-1.LinkedList<Object> list = new LinkedList<>();
+1.`LinkedList<Object> list = new LinkedList<>();`
 
 ```java
 //第一步直接调用无参构造函数

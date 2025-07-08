@@ -20,6 +20,13 @@ export default defineUserConfig({
         breaks: true,
         typographer: true
       });
+
+      md.renderer.rules.text = (tokens, idx) => {
+        let content = tokens[idx].content;
+        // 转义泛型语法中的尖括号
+        content = content.replace(/<([A-Z][a-zA-Z0-9_]*?)>/g, '&lt;$1&gt;');
+        return content;
+      };
     }
   },
   
