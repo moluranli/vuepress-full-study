@@ -2,6 +2,7 @@ import { defaultTheme } from '@vuepress/theme-default'
 import { defineUserConfig } from 'vuepress'
 import { viteBundler } from '@vuepress/bundler-vite'
 import path from 'path'
+import markdownItCleanup from 'markdown-it-cleanup'
 
 export default defineUserConfig({
   lang: 'zh-CN',
@@ -12,6 +13,19 @@ export default defineUserConfig({
   base: process.env.NODE_ENV === 'production' 
     ? '/vuepress-full-study/' 
     : '/',
+  
+  // 添加 markdown 配置
+  markdown: {
+    extendMarkdown: (md) => {
+      md.use(markdownItCleanup, {
+        replace: [
+          ['<br>', '<br />'],
+          ['<hr>', '<hr />'],
+          [/(<[a-z]+)([^>]*[^/])>/g, '$1$2 />']
+        ]
+      });
+    }
+  },
   
   theme: defaultTheme({
     logo: '/images/logo.png',
@@ -122,6 +136,13 @@ export default defineUserConfig({
     viteOptions: {
       build: {
         chunkSizeWarningLimit: 1500
+      },
+      // 添加 Vue 解析选项
+      vue: {
+        compilerOptions: {
+          whitespace: 'preserve',
+          isCustomElement: tag => true
+        }
       }
     }
   }),
