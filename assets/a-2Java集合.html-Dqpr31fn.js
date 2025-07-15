@@ -1,4 +1,4 @@
-import{_ as s,c as a,d as p,o as t}from"./app-DTgjUExS.js";const e={};function l(c,n){return t(),a("div",null,n[0]||(n[0]=[p(`<h1 id="java-集合" tabindex="-1"><a class="header-anchor" href="#java-集合"><span>java 集合</span></a></h1><h2 id="常用集合分类" tabindex="-1"><a class="header-anchor" href="#常用集合分类"><span>常用集合分类</span></a></h2><div class="language-markdown line-numbers-mode" data-highlighter="prismjs" data-ext="md"><pre><code><span class="line">Collection 接口的接口 对象的集合（单列集合）</span>
+import{_ as s,c as a,d as p,o as t}from"./app-Df-iwjfM.js";const e={};function l(c,n){return t(),a("div",null,n[0]||(n[0]=[p(`<h1 id="java-集合" tabindex="-1"><a class="header-anchor" href="#java-集合"><span>java 集合</span></a></h1><h2 id="常用集合分类" tabindex="-1"><a class="header-anchor" href="#常用集合分类"><span>常用集合分类</span></a></h2><div class="language-markdown line-numbers-mode" data-highlighter="prismjs" data-ext="md"><pre><code><span class="line">Collection 接口的接口 对象的集合（单列集合）</span>
 <span class="line">├——-List 接口：元素按进入先后有序保存，可重复</span>
 <span class="line">│—————-├ LinkedList 接口实现类， 链表， 插入删除， 没有同步， 线程不安全</span>
 <span class="line">│—————-├ ArrayList 接口实现类， 数组， 随机访问， 没有同步， 线程不安全</span>
