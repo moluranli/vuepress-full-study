@@ -31,7 +31,7 @@ export default defineUserConfig({
   },
   
   theme: defaultTheme({
-    logo: 'https://freeimghost.net/i/logo.x16g3q',
+    logo: 'https://freeimghost.net/images/2025/07/15/logo.png',
     
     navbar: [
       { text: '首页', link: '/' },
@@ -147,7 +147,7 @@ export default defineUserConfig({
   }),
   
   head: [
-    ['link', { rel: 'icon', href:'https://freeimghost.net/i/logo.x16g3q'}],
+    ['link', { rel: 'icon', href:'https://freeimghost.net/images/2025/07/15/logo.png'}],
     ['meta', { name: 'theme-color', content: '#3eaf7c' }],
     ['meta', { name: 'keywords', content: 'Java学习,秋招准备,面试题,Java基础' }]
   ],

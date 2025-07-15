@@ -1,7 +1,7 @@
 ---
 home: true
 title: Home
-heroImage: https://freeimghost.net/i/logo.x16g3q
+heroImage: https://freeimghost.net/images/2025/07/15/logo.png
 actions:
   - text: Get Started
     link: /202507社招准备/
