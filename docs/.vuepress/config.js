@@ -1,6 +1,8 @@
 import { defaultTheme } from '@vuepress/theme-default'
 import { defineUserConfig } from 'vuepress'
 import { viteBundler } from '@vuepress/bundler-vite'
+import vuepressPluginAnchorRight from 'vuepress-plugin-anchor-right';
+
 
 export default defineUserConfig({
   lang: 'zh-CN',
@@ -154,6 +156,7 @@ export default defineUserConfig({
   
   plugins: [
     ['@vuepress/plugin-search'],
-    ['@vuepress/plugin-shiki']
+    ['@vuepress/plugin-shiki'],
+    [vuepressPluginAnchorRight()]
   ]
 })
